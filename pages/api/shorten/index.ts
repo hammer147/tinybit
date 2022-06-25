@@ -7,10 +7,6 @@ type Data = { message: string }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
-  // TODO protection
-
-  
-
   // validate req.method
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST'])
@@ -27,10 +23,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const shortUrl = generateRandomString(4)
 
   // save to Redis
-  const result = await redis.hset('links', { [shortUrl]: longUrl })
+  let result: number
+  try {
+    result = await redis.hset('links', { [shortUrl]: longUrl })
+  } catch (error) {
+    return res.status(500)
+  }
 
-  // todo check result before sending response and use try catch
-  // console.log({ result }) // should be 1
+  if (result === 1) {
+    return res.status(201).json({ message: 'successfully saved' })
+  } else {
+    return res.status(404)
+  }
 
-  res.status(200).json({ message: 'successfully saved to redis' })
 }

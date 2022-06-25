@@ -8,7 +8,7 @@ const Manage: NextPage = () => {
   const [longUrl, setLongUrl] = useState('')
   const [links, setLinks] = useState<Record<string, unknown>>({})
 
-  const handleSubmit: FormEventHandler = async e => {
+  const addLink: FormEventHandler = async e => {
     e.preventDefault()
 
     // basic client-side validation via type="url" in input element
@@ -33,6 +33,20 @@ const Manage: NextPage = () => {
 
   }
 
+  const deleteLink = async (shortUrl: string) => {
+    const response = await fetch(`/api/delete/${shortUrl}`, {
+      method: 'DELETE'
+    })
+
+    // if (!response.ok) return toast.error('Something Went Wrong')
+
+    const result = await response.json()
+
+    // console.log(result)
+
+    setLinks(await getLinks())
+  }
+
   const getLinks = async () => {
     const response = await fetch('/api/links')
     // todo check response.ok
@@ -45,7 +59,7 @@ const Manage: NextPage = () => {
   }, [])
 
   const copyToClipboard = (shortUrl: string) => {
-    const url = `http://localhost:3000/${shortUrl}`
+    const url = `${process.env.NEXT_PUBLIC_DOMAIN}/${shortUrl}`
     navigator.clipboard.writeText(url).then(
       () => {
         console.log('copied link to clipboard')
@@ -69,7 +83,7 @@ const Manage: NextPage = () => {
         <h1>TinyBit</h1>
         <div>
           <h2>Create a short url</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={addLink}>
             <input
               type="url"
               required
@@ -84,6 +98,7 @@ const Manage: NextPage = () => {
         <table>
           <thead>
             <tr>
+              <td>Delete</td>
               <td>Short url</td>
               <td>Long url</td>
             </tr>
@@ -93,7 +108,8 @@ const Manage: NextPage = () => {
               const long = links[short] as string
               return (
                 <tr key={short}>
-                  <td onClick={()=> copyToClipboard(short)}>{`http://localhost:3000/${short}`}</td>
+                  <td><button onClick={() => deleteLink(short)}>del</button></td>
+                  <td onClick={()=> copyToClipboard(short)}>{`${process.env.NEXT_PUBLIC_DOMAIN}/${short}`}</td>
                   <td>{long}</td>
                 </tr>
               )

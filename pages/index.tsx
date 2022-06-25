@@ -16,7 +16,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <h1>TinyBit</h1>
         <Link href="/manage">
-          <a>Manage the links</a>
+          <a>Enter</a>
         </Link>
       </main>
 

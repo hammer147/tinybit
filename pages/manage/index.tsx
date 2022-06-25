@@ -16,7 +16,7 @@ const Manage: NextPage = () => {
 
     // console.log(`Make this short: ${longUrl}`)
 
-    const response = await fetch('/api/shorten', {
+    const response = await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ longUrl })
@@ -34,7 +34,7 @@ const Manage: NextPage = () => {
   }
 
   const deleteLink = async (shortUrl: string) => {
-    const response = await fetch(`/api/delete/${shortUrl}`, {
+    const response = await fetch(`/api/link/${shortUrl}`, {
       method: 'DELETE'
     })
 

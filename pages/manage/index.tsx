@@ -2,6 +2,9 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { FormEventHandler, useEffect, useState } from 'react'
+import { FaCopy, FaTrash, FaTrashAlt } from 'react-icons/fa'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.min.css'
 import styles from '../../styles/Home.module.css'
 
 const Manage: NextPage = () => {
@@ -31,6 +34,7 @@ const Manage: NextPage = () => {
     setLongUrl('')
     setLinks(await getLinks())
 
+    toast.success('Successfully shortened link.')
   }
 
   const deleteLink = async (shortUrl: string) => {
@@ -45,6 +49,8 @@ const Manage: NextPage = () => {
     // console.log(result)
 
     setLinks(await getLinks())
+
+    toast.success('Successfully removed link.')
   }
 
   const getLinks = async () => {
@@ -62,15 +68,13 @@ const Manage: NextPage = () => {
     const url = `${process.env.NEXT_PUBLIC_DOMAIN}/${shortUrl}`
     navigator.clipboard.writeText(url).then(
       () => {
-        console.log('copied link to clipboard')
+        toast.success('Copied short link to the clipboard.')
       },
       () => {
-        console.log('could not copy link to clipboard')
+        toast.error('Could not copy short link to the clipboard.')
       }
     )
   }
-
-  // todo styles 
 
   return (
     <div className={styles.container}>
@@ -81,35 +85,38 @@ const Manage: NextPage = () => {
       </Head>
       <main className={styles.main}>
         <h1>TinyBit</h1>
+        <h2>Url Shortener</h2>
         <div>
-          <h2>Create a short url</h2>
           <form onSubmit={addLink}>
             <input
               type="url"
               required
-              placeholder="enter long url"
+              placeholder="https://"
               value={longUrl}
               onChange={e => setLongUrl(e.target.value)}
+              style={{ width: `${Math.max(40, longUrl.length * 0.5)}em` }}
             />
-            <button>Make it short</button>
+            <button className={styles.shortenButton}>Shorten</button>
           </form>
         </div>
         {/* <pre>{JSON.stringify(links, null, 2)}</pre> */}
-        <table>
-          <thead>
+        <table className={styles.table}>
+          {/* <thead>
             <tr>
               <td>Delete</td>
               <td>Short url</td>
+              <td>Copy</td>
               <td>Long url</td>
             </tr>
-          </thead>
+          </thead> */}
           <tbody>
             {Object.keys(links).map(short => {
               const long = links[short] as string
               return (
                 <tr key={short}>
-                  <td><button onClick={() => deleteLink(short)}>del</button></td>
-                  <td onClick={()=> copyToClipboard(short)}>{`${process.env.NEXT_PUBLIC_DOMAIN}/${short}`}</td>
+                  <td><button className={`${styles.iconButton} ${styles.trash}`} onClick={() => deleteLink(short)}><FaTrashAlt /></button></td>
+                  <td>{`${process.env.NEXT_PUBLIC_DOMAIN}/${short}`}</td>
+                  <td><button className={`${styles.iconButton} ${styles.copy}`} onClick={() => copyToClipboard(short)}><FaCopy /></button></td>
                   <td>{long}</td>
                 </tr>
               )
@@ -117,6 +124,10 @@ const Manage: NextPage = () => {
           </tbody>
         </table>
       </main>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+      />
     </div>
   )
 }

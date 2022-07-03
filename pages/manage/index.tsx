@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import { FormEventHandler, useEffect, useState } from 'react'
 import { FaCopy, FaTrash, FaTrashAlt } from 'react-icons/fa'
 import { ToastContainer, toast } from 'react-toastify'
@@ -25,10 +24,9 @@ const Manage: NextPage = () => {
       body: JSON.stringify({ longUrl })
     })
 
-    // if (!response.ok) return toast.error('Something Went Wrong')
+    if (!response.ok) return toast.error('Something Went Wrong')
 
-    const result = await response.json()
-
+    // const result = await response.json()
     // console.log(result)
 
     setLongUrl('')
@@ -42,10 +40,9 @@ const Manage: NextPage = () => {
       method: 'DELETE'
     })
 
-    // if (!response.ok) return toast.error('Something Went Wrong')
+    if (!response.ok) return toast.error('Something Went Wrong')
 
-    const result = await response.json()
-
+    // const result = await response.json()
     // console.log(result)
 
     setLinks(await getLinks())
@@ -55,7 +52,10 @@ const Manage: NextPage = () => {
 
   const getLinks = async () => {
     const response = await fetch('/api/links')
-    // todo check response.ok
+    if (!response.ok) {
+      toast.error('Something Went Wrong')
+      return {}
+    }
     const data = await response.json()
     return data.links
   }
